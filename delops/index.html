@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Little Gift For You 🎁</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #fff0f8 0%, #fce4ec 40%, #f3e5f5 70%, #e8f5e9 100%);
+      font-family: 'Nunito', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ---- Floating background blobs ---- */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.45;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 { width: 500px; height: 500px; background: #f9a8d4; top: -120px; left: -120px; animation: blobMove 9s ease-in-out infinite alternate; }
+    .blob-2 { width: 420px; height: 420px; background: #c084fc; bottom: -100px; right: -100px; animation: blobMove 11s ease-in-out infinite alternate-reverse; }
+    .blob-3 { width: 350px; height: 350px; background: #86efac; top: 40%; left: 60%; animation: blobMove 7s ease-in-out infinite alternate; }
+
+    @keyframes blobMove {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    /* ---- Confetti Canvas ---- */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* ---- Main Card ---- */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 2.5px solid rgba(255,182,193,0.5);
+      border-radius: 36px;
+      padding: 48px 44px 44px;
+      max-width: 480px;
+      width: calc(100% - 40px);
+      text-align: center;
+      box-shadow:
+        0 8px 40px rgba(249,168,212,0.25),
+        0 2px 8px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+      animation: cardPop 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes cardPop {
+      from { opacity: 0; transform: scale(0.7) translateY(30px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Sparkle sticker top right */
+    .sticker {
+      position: absolute;
+      font-size: 28px;
+      pointer-events: none;
+      animation: spin 5s linear infinite;
+    }
+    .sticker-1 { top: -18px; right: 28px; animation-duration: 6s; }
+    .sticker-2 { top: 20px;  left: -18px; animation-direction: reverse; font-size: 22px; }
+    .sticker-3 { bottom: -14px; left: 40px; animation-duration: 8s; }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(180deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* ---- Header Text ---- */
+    .tag {
+      display: inline-block;
+      background: linear-gradient(135deg, #f9a8d4, #e879f9);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 10px rgba(232,121,249,0.3);
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(26px, 5vw, 36px);
+      color: #c026d3;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 0 rgba(192,38,211,0.15);
+    }
+
+    h1 .name {
+      color: #ec4899;
+      display: block;
+    }
+
+    .sub {
+      font-size: 14.5px;
+      color: #9d6f8a;
+      font-weight: 600;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* ---- Gift Box ---- */
+    .gift-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin: 0 auto 32px;
+      height: 175px;
+      width: 160px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* Shadow below the box */
+    .gift-shadow {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 20px;
+      background: radial-gradient(ellipse, rgba(0,0,0,0.15) 0%, transparent 75%);
+      border-radius: 50%;
+      transition: all 0.4s ease;
+    }
+
+    /* Box body */
+    .box-body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 90px;
+      background: linear-gradient(145deg, #fb7185, #f43f5e);
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 6px 20px rgba(244,63,94,0.35), inset 0 2px 0 rgba(255,255,255,0.2);
+      overflow: hidden;
+    }
+
+    /* Vertical ribbon on body */
+    .box-body::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 100%;
+      background: linear-gradient(180deg, #fde68a, #fbbf24, #fde68a);
+      box-shadow: 0 0 8px rgba(251,191,36,0.5);
+    }
+
+    /* Lid */
+    .box-lid {
+      position: absolute;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 132px;
+      height: 34px;
+      background: linear-gradient(145deg, #fb7185, #e11d48);
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 -4px 12px rgba(225,29,72,0.2), inset 0 2px 0 rgba(255,255,255,0.2);
+      transition: transform 0.7s cubic-bezier(0.34,1.56,0.64,1), opacity 0.5s ease;
+      transform-origin: center bottom;
+    }
+
+    /* Bow on lid */
+    .bow {
+      position: absolute;
+      top: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 30px;
+      pointer-events: none;
+    }
+
+    .bow-loop {
+      position: absolute;
+      width: 26px;
+      height: 18px;
+      background: linear-gradient(135deg, #fde68a, #fbbf24);
+      border-radius: 50%;
+      top: 0;
+      box-shadow: 0 2px 8px rgba(251,191,36,0.4);
+    }
+    .bow-loop.left  { left: 0;  transform: rotate(-30deg); }
+    .bow-loop.right { right: 0; transform: rotate(30deg); }
+
+    .bow-knot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #fbbf24;
+      border-radius: 50%;
+      top: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 2px 6px rgba(251,191,36,0.6);
+    }
+
+    /* Ribbon tails */
+    .bow-tail {
+      position: absolute;
+      bottom: -14px;
+      width: 10px;
+      height: 16px;
+      background: linear-gradient(180deg, #fbbf24, #fde68a);
+      border-radius: 0 0 6px 6px;
+    }
+    .bow-tail.left  { left: 24px;  transform: rotate(-10deg); }
+    .bow-tail.right { right: 24px; transform: rotate(10deg); }
+
+    /* Gift box float animation */
+    .gift-wrap { animation: floatBox 3s ease-in-out infinite; }
+
+    @keyframes floatBox {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    /* Opened state */
+    .gift-wrap.opened .box-lid {
+      transform: translateX(-80%) rotate(-55deg);
+      opacity: 0;
+    }
+    .gift-wrap.opened { animation: none; }
+    .gift-wrap.opened .gift-shadow { width: 80px; opacity: 0.5; }
+
+    /* Stars that pop out when opened */
+    .pop-star {
+      position: absolute;
+      font-size: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: none;
+    }
+
+    /* ---- Buttons ---- */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #f472b6, #ec4899, #db2777);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 16px 32px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(236,72,153,0.4), 0 2px 0 rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-main::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -80%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transform: skewX(-20deg);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { left: -80%; }
+      60%, 100% { left: 140%; }
+    }
+
+    .btn-main:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 28px rgba(236,72,153,0.5), 0 2px 0 rgba(0,0,0,0.1);
+    }
+    .btn-main:active { transform: translateY(1px) scale(0.98); }
+
+    .btn-cancel {
+      background: rgba(255,255,255,0.6);
+      color: #c4a0b5;
+      border: 2px solid rgba(249,168,212,0.4);
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-cancel:hover {
+      background: rgba(255,255,255,0.9);
+      color: #9d174d;
+      border-color: rgba(249,168,212,0.8);
+      transform: translateY(-2px);
+    }
+
+    /* ---- Cute floating emojis in background ---- */
+    .floater {
+      position: fixed;
+      font-size: 22px;
+      pointer-events: none;
+      z-index: 1;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.5; }
+      100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ---- Modal ---- */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(252,228,236,0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+    .modal-bg.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-box {
+      background: rgba(255,255,255,0.92);
+      border: 2.5px solid rgba(249,168,212,0.5);
+      border-radius: 28px;
+      max-width: 360px;
+      width: 100%;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(249,168,212,0.3);
+      transform: scale(0.8) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .modal-bg.show .modal-box { transform: scale(1) translateY(0); }
+
+    .modal-emoji { font-size: 52px; margin-bottom: 12px; display: block; }
+    .modal-box h2 {
+      font-family: 'Pacifico', cursive;
+      color: #c026d3;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .modal-box p {
+      color: #a16880;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(255,255,255,0.92);
+      border: 2px solid rgba(249,168,212,0.5);
+      color: #9d174d;
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(249,168,212,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.2,0.8,0.2,1);
+      z-index: 150;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Soft blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Confetti canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Cute floating emojis (injected by JS) -->
+
+  <!-- Main Card -->
+  <div class="card">
+    <div class="sticker sticker-1">🌟</div>
+    <div class="sticker sticker-2">🌸</div>
+    <div class="sticker sticker-3">✨</div>
+
+    <div class="tag">💌 Just For You</div>
+
+    <h1>A Little Gift For<span class="name">babiii 🎀</span></h1>
+    <p class="sub">Tap the gift to reveal something special made just for you ✨</p>
+
+    <!-- Cute Gift Box -->
+    <div class="gift-wrap" id="giftWrap" onclick="handleGiftClick()" title="Tap to unwrap!">
+      <div class="gift-shadow"></div>
+
+      <!-- Lid with bow -->
+      <div class="box-lid">
+        <div class="bow">
+          <div class="bow-loop left"></div>
+          <div class="bow-loop right"></div>
+          <div class="bow-knot"></div>
+          <div class="bow-tail left"></div>
+          <div class="bow-tail right"></div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="box-body"></div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-group">
+      <button class="btn-main" id="mainBtn" onclick="handleMainBtn()">
+        <span id="btnEmoji">🎁</span>
+        <span id="btnLabel">Unwrap Your Gift!</span>
+      </button>
+      <button class="btn-cancel" onclick="handleCancel()">
+        <span>😶</span> Maybe Later
+      </button>
+    </div>
+  </div>
+
+  <!-- Cancel Modal -->
+  <div class="modal-bg" id="modal">
+    <div class="modal-box">
+      <span class="modal-emoji" id="modalEmoji">🥺</span>
+      <h2>Aww, wait!</h2>
+      <p>You really can't leave now! There's something super sweet waiting inside, especially made for you, babiii 💖</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn-main" onclick="modalOpen()" style="justify-content:center;">
+          <span>💝</span> Okay, Open It!
+        </button>
+        <button class="btn-cancel" onclick="closeModal()" style="justify-content:center;">
+          🙈 I'll come back later
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">🌸</span>
+    <span id="toastText">...</span>
+  </div>
+
+  <script>  
+    /* ── Floating emoji background ─────────────────────── */
+    const emojis = ['💕','🌸','✨','🎀','💖','🌟','🩷','🫶','🌺','💫','🎊','💋','🍭'];
+    function spawnFloater() {
+      const el = document.createElement('div');
+      el.className = 'floater';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      const size = Math.random() * 14 + 16;
+      el.style.cssText = `
+        font-size: ${size}px;
+        left: ${Math.random() * 98}vw;
+        bottom: -40px;
+        animation-duration: ${Math.random() * 8 + 7}s;
+        animation-delay: ${Math.random() * 4}s;
+      `;
+      document.body.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }
+    setInterval(spawnFloater, 900);
+    for (let i = 0; i < 8; i++) spawnFloater();
+
+    /* ── Confetti ──────────────────────────────────────── */
+    const canvas  = document.getElementById('confetti-canvas');
+    const ctx     = canvas.getContext('2d');
+    let confetti  = [];
+    let animFrame = null;
+
+    function resizeCanvas() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const COLORS = ['#f9a8d4','#f472b6','#e879f9','#fde68a','#86efac','#a5f3fc','#c4b5fd','#fb923c'];
+
+    class Piece {
+      constructor(x, y) {
+        this.x     = x;
+        this.y     = y;
+        this.vx    = (Math.random() - 0.5) * 8;
+        this.vy    = Math.random() * -10 - 4;
+        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        this.w     = Math.random() * 10 + 5;
+        this.h     = Math.random() * 5  + 4;
+        this.rot   = Math.random() * Math.PI * 2;
+        this.rotV  = (Math.random() - 0.5) * 0.2;
+        this.g     = 0.35;
+        this.life  = 1;
+        this.fade  = Math.random() * 0.012 + 0.008;
+        this.shape = Math.random() > 0.5 ? 'rect' : 'circle';
+      }
+      update() {
+        this.vy += this.g;
+        this.x  += this.vx;
+        this.y  += this.vy;
+        this.rot += this.rotV;
+        this.life -= this.fade;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.fillStyle   = this.color;
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rot);
+        if (this.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, this.w / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+        }
+        ctx.restore();
+      }
+    }
+
+    function burst(x, y, n = 80) {
+      for (let i = 0; i < n; i++) confetti.push(new Piece(x, y));
+      if (!animFrame) drawConfetti();
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti = confetti.filter(p => p.life > 0);
+      confetti.forEach(p => { p.update(); p.draw(); });
+      if (confetti.length > 0) {
+        animFrame = requestAnimationFrame(drawConfetti);
+      } else {
+        animFrame = null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* ── State ─────────────────────────────────────────── */
+    let isOpened = false;
+
+    function handleGiftClick() {
+      if (!isOpened) unwrap();
+      else goToLetter();
+    }
+
+    function handleMainBtn() {
+      if (!isOpened) unwrap();
+      else goToLetter();
+    }
+
+    function unwrap() {
+      if (isOpened) return;
+      isOpened = true;
+
+      const giftWrap = document.getElementById('giftWrap');
+      const rect = giftWrap.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top  + rect.height / 2;
+
+      giftWrap.classList.add('opened');
+      burst(cx, cy, 120);
+
+      // Burst again slightly later for extra joy
+      setTimeout(() => burst(cx, cy - 60, 60), 250);
+
+      document.getElementById('btnEmoji').textContent = '💌';
+      document.getElementById('btnLabel').textContent = "Read babiii's Letter";
+
+      const btn = document.getElementById('mainBtn');
+      btn.style.background = 'linear-gradient(135deg, #34d399, #10b981, #059669)';
+      btn.style.boxShadow  = '0 6px 20px rgba(16,185,129,0.4), 0 2px 0 rgba(0,0,0,0.1)';
+
+      showToast('🎉 Yay! You unwrapped it!', '🎊');
+    }
+
+    function goToLetter() {
+      showToast('Opening your letter... 💌', '🌸');
+      setTimeout(() => { window.location.href = 'letter.html'; }, 500);
+    }
+
+    /* ── Modal ─────────────────────────────────────────── */
+    function handleCancel() {
+      // Wiggle the gift box as a guilt trip ✨
+      const gw = document.getElementById('giftWrap');
+      gw.style.animation = 'none';
+      gw.style.transform = 'rotate(-6deg) scale(1.05)';
+      setTimeout(() => {
+        gw.style.transform = 'rotate(6deg) scale(1.05)';
+        setTimeout(() => {
+          gw.style.transform = '';
+          gw.style.animation = '';
+          document.getElementById('modal').classList.add('show');
+        }, 160);
+      }, 160);
+    }
+
+    function modalOpen() {
+      closeModal();
+      setTimeout(unwrap, 200);
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('show');
+    }
+
+    /* ── Toast ─────────────────────────────────────────── */
+    let toastTimer = null;
+    function showToast(msg, icon = '✨') {
+      const t = document.getElementById('toast');
+      document.getElementById('toastText').textContent = msg;
+      document.getElementById('toastIcon').textContent = icon;
+      t.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
